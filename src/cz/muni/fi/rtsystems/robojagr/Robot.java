@@ -107,29 +107,22 @@ class Robot {
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (irSensor.isInDistanceMode()) {
-                    sensorsMessageDistance();
-                } else {
-                    sensorsMessageBeacon();
-                }
+                showSensorsMessage(irSensor.isInDistanceMode());
                 if (Button.ESCAPE.isDown())
                     System.exit(0);
             }
         }, 400, 400);
     }
 
-    private void sensorsMessageBeacon() {
+    private void showSensorsMessage(boolean isInDistanceMode) {
         lcd.clear();
-        lcd.drawString("IR distance: " + irSensor.getValue2(), 5, 0, 0);
-        lcd.drawString("Direction: " + irSensor.getValue1(), 5, 20, 0);
+        if (isInDistanceMode) {
+            lcd.drawString("IR distance: " + irSensor.getValue1(), 5, 0, 0);
+        } else {
+            lcd.drawString("IR distance: " + irSensor.getValue2(), 5, 0, 0);
+            lcd.drawString("Direction: " + irSensor.getValue1(), 5, 20, 0);
+        }
         lcd.drawString("Color sensor: " + colorSensor.getColor(), 5, 40, 0);
-        lcd.drawString("Orientation: " + orientation, 5, 80, 0);
-    }
-
-    private void sensorsMessageDistance() {
-        lcd.clear();
-        lcd.drawString("IR distance: " + irSensor.getValue1(), 5, 0, 0);
-        lcd.drawString("Color sensor: " + colorSensor.getColor(), 5, 40, 0);
-        lcd.drawString("Orientation: " + orientation, 5, 80, 0);
+        lcd.drawString("Orientation: " + orientation, 5, 80, 0);            
     }
 }
