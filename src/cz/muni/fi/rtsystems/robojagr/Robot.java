@@ -21,7 +21,7 @@ class Robot {
      * otoci se a zjisti pozici a vzdalenost k beaconu
      */
     public void findBeacon() {
-        irSensor.switchBeaconDetector();
+        irSensor.setBeaconDetector();
         motors.turn();
 
         while (true) {
@@ -41,7 +41,7 @@ class Robot {
      */
     public void measureDistance() {
 
-        irSensor.switchDistanceDetector();
+        irSensor.setDistanceDetector();
         motors.turn(360);
         while (true) {
             if (motors.isFinished()) {
@@ -61,7 +61,7 @@ class Robot {
 
         // priklad jen jede rovne dokud se nepriblizi ke zdi nebo nenajde branku
         // (nema pod sebou bilou barvu]
-        irSensor.switchDistanceDetector();
+        irSensor.setDistanceDetector();
         motors.forward(200);
         while (true) {
             if ((irSensor.getValue1() < 10 && irSensor.getValue1() > 0) || colorSensor.getColor() == Color.WHITE) {

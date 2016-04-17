@@ -8,7 +8,7 @@ class IRSensor extends Thread {
     private static final int OFFSET = 0;
     private EV3IRSensor ir = new EV3IRSensor(SensorPort.S4);
     private SensorMode sp = ir.getSeekMode();
-    private boolean inDistanceMode = false;
+    private boolean isInDistanceMode = false;
     private int value1;
     private int value2;
 
@@ -17,49 +17,58 @@ class IRSensor extends Thread {
             float[] sample = new float[sp.sampleSize()];
             sp.fetchSample(sample, OFFSET);
             value1 = (int) sample[0];
-            if (!inDistanceMode) {
+            if (!isInDistanceMode()) {
                 value2 = (int) sample[1];
             }
-
         }
     }
 
     /**
-     * hodnota ze senzoru - u distacemodu vzdalenost, u beaconmodu smer
+     * Returns the first value from the IR sensor:
      * 
-     * @return
+     * In DistanceMode, the value represents distance
+     * In BeaconMode, the value represents direction
+     * 
+     * @return the first value from the sensor
      */
     public int getValue1() {
         return value1;
     }
 
     /**
-     * dalsi hodnota ze senzoru, u beaconmodu vzdalenost
+     * Returns the second value from the IR sensor:
      * 
-     * @return
+     * In BeaconMode, the value represents direction
+     * 
+     * @return the second value from the sensor
      */
     public int getValue2() {
         return value2;
     }
 
     /**
-     * prepnuti do modu beacondetector
+     * Set IRSensor to beacon mode.
      */
-    public void switchBeaconDetector() {
+    public void setBeaconDetector() {
         sp = ir.getSeekMode();
-        inDistanceMode = false;
+        isInDistanceMode = false;
     }
 
     /**
-     * prepnuti do modu distancedetector
+     * Set IRSensor to distance mode.
      */
-    public void switchDistanceDetector() {
+    public void setDistanceDetector() {
         sp = ir.getDistanceMode();
-        inDistanceMode = true;
+        isInDistanceMode = true;
     }
 
+    /**
+     * Finds out whether the IR sensor is in distance mode.
+     * 
+     * @return true if IRSensor is in distance mode, false otherwise.
+     */
     public boolean isInDistanceMode() {
-        return inDistanceMode;
+        return isInDistanceMode;
     }
 
 }
