@@ -1,12 +1,9 @@
 package cz.muni.fi.rtsystems.robojagr.enums;
 
 public enum Color {
-    WHITE, NOTWHITE;
+	NONE, BLACK, BLUE, GREEN, YELLOW, RED, WHITE, BROWN;
     
     public static Color getColor(int number) {
-        if (number == -1) {
-            return Color.WHITE;
-        }
-        return NOTWHITE;
+        return values()[number];
     }
 }
