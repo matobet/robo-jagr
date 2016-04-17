@@ -4,6 +4,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 
 public class Motors {
+    private static final int MOTOR_SPEED = 200;
     public static final double TURN_RATIO = 3.65;
     private EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.C);
     private EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.B);
@@ -36,8 +37,8 @@ public class Motors {
      *            uhel
      */
     public void turn(int degree) {
-        rightMotor.setSpeed(200);
-        leftMotor.setSpeed(200);
+        rightMotor.setSpeed(MOTOR_SPEED);
+        leftMotor.setSpeed(MOTOR_SPEED);
         rightMotor.rotate((int) Math.round(TURN_RATIO * degree), true);
         leftMotor.rotate((int) Math.round(-TURN_RATIO * degree), true);
     }
@@ -47,8 +48,8 @@ public class Motors {
      */
     public void turn() {
         rightMotor.resetTachoCount();
-        rightMotor.setSpeed(200);
-        leftMotor.setSpeed(200);
+        rightMotor.setSpeed(MOTOR_SPEED);
+        leftMotor.setSpeed(MOTOR_SPEED);
         rightMotor.forward();
         leftMotor.backward();
 

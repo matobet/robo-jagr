@@ -5,6 +5,7 @@ import lejos.hardware.sensor.EV3IRSensor;
 import lejos.hardware.sensor.SensorMode;
 
 class IRSensor extends Thread {
+    private static final int OFFSET = 0;
     private EV3IRSensor ir = new EV3IRSensor(SensorPort.S4);
     private SensorMode sp = ir.getSeekMode();
     private boolean inDistanceMode = false;
@@ -14,7 +15,7 @@ class IRSensor extends Thread {
     public void run() {
         while (true) {
             float[] sample = new float[sp.sampleSize()];
-            sp.fetchSample(sample, 0);
+            sp.fetchSample(sample, OFFSET);
             value1 = (int) sample[0];
             if (!inDistanceMode) {
                 value2 = (int) sample[1];

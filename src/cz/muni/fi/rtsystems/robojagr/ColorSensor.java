@@ -7,6 +7,7 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorMode;
 
 class ColorSensor extends Thread {
+    private static final int OFFSET = 0;
     private EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S1);
     private SensorMode sp = cs.getColorIDMode();
     private volatile int colorNumber = 0;
@@ -14,7 +15,7 @@ class ColorSensor extends Thread {
     public void run() {
         while (true) {
             float[] sample = new float[sp.sampleSize()];
-            sp.fetchSample(sample, 0);
+            sp.fetchSample(sample, OFFSET);
             colorNumber = (int) sample[0];
         }
     }
