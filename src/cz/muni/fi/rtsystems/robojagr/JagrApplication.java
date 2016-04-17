@@ -8,7 +8,7 @@ public class JagrApplication {
         robot.startSensors();
         robot.startTimer();
         robot.findBeacon();
-        robot.measureDistance();
+        robot.mapWalls();
         robot.findGoal();
     }
 }

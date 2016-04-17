@@ -9,6 +9,7 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.GraphicsLCD;
 
 class Robot {
+    private static final int WALL_DISTANCE_INFINITY = 1000;
     private IRSensor irSensor;
     private ColorSensor colorSensor;
     private Motors motors = new Motors();
@@ -37,20 +38,37 @@ class Robot {
     }
 
     /**
-     * otoci se a zjisti vzdalenosti ke kraji
+     * Turn 360° and find the walls of the arena.
+     * 
      */
-    public void measureDistance() {
-
+    public void mapWalls() {
+        int wallDistances[] = {WALL_DISTANCE_INFINITY, WALL_DISTANCE_INFINITY, WALL_DISTANCE_INFINITY, WALL_DISTANCE_INFINITY};
         irSensor.setDistanceDetector();
         motors.turn(360);
         while (true) {
+            int distance = irSensor.getValue1();
+            int maxValueIndex = findMaxValueIndex(wallDistances);
+            if (distance < wallDistances[maxValueIndex]) {
+                wallDistances[maxValueIndex] = distance;
+            }
             if (motors.isFinished()) {
                 break;
             }
         }
-        // TO DO vlozeni hodnot do nejake mapy prostredi
-        // asi zjistovat prubezne orientaci a ukladat vzdalenosti ke kraji
-        // (irSensor.getValue1())
+        // TODO we now have 4 minimal distances after turnin 360°. This, in theory, should correspond to the distances of walls.
+        // What should be done: Calculate the wall lengths/map from the distances.
+    }
+    
+    private int findMaxValueIndex(int[] intArray) {
+        int value = 0;
+        int index = 0;
+        for (int i = 0; i < intArray.length; i++) {
+            if (intArray[i] > value) {
+                value = intArray[i];
+                index = i;
+            }
+        }
+        return index;
     }
 
     public void findGoal() {
