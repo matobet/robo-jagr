@@ -8,10 +8,8 @@ public class JagrApplication {
         robot.startSensors();
         // robot.testForCalibrateDistanceRatio();
         robot.startTimer();
-        robot.findBeacon();
-        // robot.measureDistance();
-        robot.turnAwayFromBeacon();
         robot.findGoal();
+        robot.goToMiddleOfGoal();
         robot.goToBeacon();
         robot.goRoundBeacon();
         robot.goToGoal();
