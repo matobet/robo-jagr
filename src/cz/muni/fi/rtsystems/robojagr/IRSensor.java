@@ -5,70 +5,69 @@ import lejos.hardware.sensor.EV3IRSensor;
 import lejos.hardware.sensor.SensorMode;
 
 class IRSensor extends Thread {
-    private static final int OFFSET = 0;
     private EV3IRSensor ir = new EV3IRSensor(SensorPort.S4);
     private SensorMode sp = ir.getSeekMode();
-    private boolean isInDistanceMode = false;
+    private boolean inDistanceMode = false;
     private int value1;
     private int value2;
 
     public void run() {
         while (true) {
-            float[] sample = new float[sp.sampleSize()];
-            sp.fetchSample(sample, OFFSET);
+            int size = sp.sampleSize();
+            float[] sample = new float[size];
+            sp.fetchSample(sample, 0);
             value1 = (int) sample[0];
-            if (!isInDistanceMode()) {
+            if (!inDistanceMode && size > 1) {
                 value2 = (int) sample[1];
             }
+
         }
     }
 
     /**
-     * Returns the first value from the IR sensor:
-     * 
-     * In DistanceMode, the value represents distance
-     * In BeaconMode, the value represents direction
-     * 
-     * @return the first value from the sensor
+     * hodnota ze senzoru - vzdalenost u distance /beacon modu
+     *
+     * @return
      */
-    public int getValue1() {
-        return value1;
+    public int getDistance() {
+        if (inDistanceMode) {
+            return value1;
+        } else {
+            return value2;
+        }
     }
 
     /**
-     * Returns the second value from the IR sensor:
-     * 
-     * In BeaconMode, the value represents direction
-     * 
-     * @return the second value from the sensor
+     * dalsi hodnota ze senzoru, u beaconmodu vzdalenost
+     *
+     * @return
      */
-    public int getValue2() {
-        return value2;
+    public int getDirection() {
+        if (!inDistanceMode) {
+            return value1;
+        } else {
+            return 0;
+        }
     }
 
     /**
-     * Set IRSensor to beacon mode.
+     * prepnuti do modu beacondetector
      */
-    public void setBeaconDetector() {
+    public void switchBeaconDetector() {
         sp = ir.getSeekMode();
-        isInDistanceMode = false;
+        inDistanceMode = false;
     }
 
     /**
-     * Set IRSensor to distance mode.
+     * prepnuti do modu distancedetector
      */
-    public void setDistanceDetector() {
+    public void switchDistanceDetector() {
         sp = ir.getDistanceMode();
-        isInDistanceMode = true;
+        inDistanceMode = true;
     }
 
-    /**
-     * Finds out whether the IR sensor is in distance mode.
-     * 
-     * @return true if IRSensor is in distance mode, false otherwise.
-     */
     public boolean isInDistanceMode() {
-        return isInDistanceMode;
+        return inDistanceMode;
     }
 
 }

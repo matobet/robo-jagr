@@ -6,9 +6,15 @@ public class JagrApplication {
         Robot robot = new Robot();
         robot.introMessage();
         robot.startSensors();
+        // robot.testForCalibrateDistanceRatio();
         robot.startTimer();
         robot.findBeacon();
-        robot.mapWalls();
+        // robot.measureDistance();
+        robot.turnAwayFromBeacon();
         robot.findGoal();
+        robot.goToBeacon();
+        robot.goRoundBeacon();
+        robot.goToGoal();
+        // atd.
     }
 }
