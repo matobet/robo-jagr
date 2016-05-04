@@ -8,6 +8,10 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.GraphicsLCD;
 
 class Robot {
+
+    public static final int SPEED = 200;
+    public static final int STOP_THRESHOLD = 10;
+
     private IRSensor irSensor;
     private ColorSensor colorSensor;
     private Motors motors = new Motors();
@@ -79,7 +83,7 @@ class Robot {
      */
     public void goToMiddleOfGoal() {
         // TODO: najst spravnu magic constantu pre `distance` od kraju branku do stredu
-        forwardAndUpdate(200, 8);
+        forwardAndUpdate(SPEED, 8);
     }
 
     /**
@@ -125,9 +129,9 @@ class Robot {
 
     public void goToBeacon() {
         findBeacon();
-        motors.forward(200);
+        motors.forward(SPEED);
         while (true) {
-            if (irSensor.getDistance() <= 10 && irSensor.getDistance() != 0) {
+            if (irSensor.getDistance() <= STOP_THRESHOLD && irSensor.getDistance() != 0) {
                 motors.stop();
 //                updateBeaconLocation(motors.drivenDistance());
 //                updateGoalLocation(motors.drivenDistance());
@@ -138,20 +142,20 @@ class Robot {
 
     public void goRoundBeacon() {
         turnAndOrientation(-90);
-        forwardAndUpdate(200, 8);
+        forwardAndUpdate(SPEED, 8);
         turnAndOrientation(90);
-        forwardAndUpdate(200, 22);
+        forwardAndUpdate(SPEED, 22);
         turnAndOrientation(90);
-        forwardAndUpdate(200, 8);
+        forwardAndUpdate(SPEED, 8);
         turnAndOrientation(90);
 
     }
 
     public void goToGoal() {
-        motors.forward(200);
+        motors.forward(SPEED);
         irSensor.switchDistanceDetector();
         while (true) {
-            if ((irSensor.getDistance() < 10 && irSensor.getDistance() != 0)) {
+            if ((irSensor.getDistance() < STOP_THRESHOLD && irSensor.getDistance() != 0)) {
                 motors.stop();
                 break;
             }
@@ -226,16 +230,16 @@ class Robot {
 //    }
 
     private void goRoundCorners() {
-        motors.forward(200);
+        motors.forward(SPEED);
         boolean success;
         while (true) {
-            if ((irSensor.getDistance() < 10 && irSensor.getDistance() > 0)) {
+            if ((irSensor.getDistance() < STOP_THRESHOLD && irSensor.getDistance() > 0)) {
                 motors.stop();
                 success = false;
 //                updateBeaconLocation(motors.drivenDistance());
                 break;
             }
-            if (colorSensor.getColor() == -1) {
+            if (colorSensor.isWhite()) {
                 motors.stop();
                 success = true;
 //                updateBeaconLocation(motors.drivenDistance());

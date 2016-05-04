@@ -13,6 +13,5 @@ public class JagrApplication {
         robot.goToBeacon();
         robot.goRoundBeacon();
         robot.goToGoal();
-        // atd.
     }
 }

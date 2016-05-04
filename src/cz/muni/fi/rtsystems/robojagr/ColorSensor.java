@@ -6,6 +6,9 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorMode;
 
 class ColorSensor extends Thread {
+
+    public static int WHITE = -1;
+
     private EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S1);
     private SensorMode sp = cs.getColorIDMode();
     private int color = 0;
@@ -23,6 +26,10 @@ class ColorSensor extends Thread {
      */
     public int getColor() {
         return color;
+    }
+
+    public boolean isWhite() {
+        return color == WHITE;
     }
 
 }
