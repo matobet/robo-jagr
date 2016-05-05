@@ -9,8 +9,6 @@ import lejos.hardware.lcd.GraphicsLCD;
 
 class Robot {
 
-    public static final int SPEED = 200;
-
     private IRSensor irSensor;
     private ColorSensor colorSensor;
     private Motors motors = new Motors();
@@ -67,7 +65,7 @@ class Robot {
      */
     public void goToMiddleOfGoal() {
         // TODO: najst spravnu magic constantu pre `distance` od kraju branku do stredu
-        forwardAndUpdate(SPEED, 8);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, 8);
     }
 
     /**
@@ -113,7 +111,7 @@ class Robot {
 
     public void goToBeacon() {
         findBeacon();
-        motors.forward(SPEED);
+        motors.forward();
         while (true) {
             if (irSensor.isWallAhead()) {
                 motors.stop();
@@ -124,17 +122,17 @@ class Robot {
 
     public void goRoundBeacon() {
         turnAndOrientation(-90);
-        forwardAndUpdate(SPEED, 8);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, 8);
         turnAndOrientation(90);
-        forwardAndUpdate(SPEED, 22);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, 22);
         turnAndOrientation(90);
-        forwardAndUpdate(SPEED, 8);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, 8);
         turnAndOrientation(90);
 
     }
 
     public void goToGoal() {
-        motors.forward(SPEED);
+        motors.forward();
         irSensor.switchDistanceDetector();
         while (true) {
             if (irSensor.isWallAhead()) {
@@ -179,7 +177,7 @@ class Robot {
     }
 
     private void goRoundCorners() {
-        motors.forward(SPEED);
+        motors.forward();
         boolean success;
         while (true) {
             if (irSensor.isWallAhead()) {

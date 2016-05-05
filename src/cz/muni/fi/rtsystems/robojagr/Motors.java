@@ -4,8 +4,11 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 
 class Motors {
+
     public static final double TURN_RATIO = 3.65;
     public static final double DISTANCE_RATIO = 73; // v jednotkach priblizne
+    public static final int DEFAULT_SPEED = 200;
+
     // odpovidajici ir detectoru
     private EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.C);
     private EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.B);
@@ -22,6 +25,10 @@ class Motors {
         leftMotor.setSpeed(speed);
         rightMotor.forward();
         leftMotor.forward();
+    }
+
+    public void forward() {
+        forward(DEFAULT_SPEED);
     }
 
     public int drivenDistance() {
