@@ -5,6 +5,8 @@ import lejos.hardware.sensor.EV3IRSensor;
 import lejos.hardware.sensor.SensorMode;
 
 class IRSensor extends Thread {
+    public static final int STOP_THRESHOLD = 10;
+
     private EV3IRSensor ir = new EV3IRSensor(SensorPort.S4);
     private SensorMode sp = ir.getSeekMode();
     private boolean inDistanceMode = false;
@@ -35,6 +37,10 @@ class IRSensor extends Thread {
         } else {
             return value2;
         }
+    }
+
+    public boolean isWallAhead() {
+        return getDistance() < STOP_THRESHOLD && getDistance() != 0;
     }
 
     /**

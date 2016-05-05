@@ -10,7 +10,6 @@ import lejos.hardware.lcd.GraphicsLCD;
 class Robot {
 
     public static final int SPEED = 200;
-    public static final int STOP_THRESHOLD = 10;
 
     private IRSensor irSensor;
     private ColorSensor colorSensor;
@@ -116,7 +115,7 @@ class Robot {
         findBeacon();
         motors.forward(SPEED);
         while (true) {
-            if (irSensor.getDistance() <= STOP_THRESHOLD && irSensor.getDistance() != 0) {
+            if (irSensor.isWallAhead()) {
                 motors.stop();
                 break;
             }
@@ -138,7 +137,7 @@ class Robot {
         motors.forward(SPEED);
         irSensor.switchDistanceDetector();
         while (true) {
-            if ((irSensor.getDistance() < STOP_THRESHOLD && irSensor.getDistance() != 0)) {
+            if (irSensor.isWallAhead()) {
                 motors.stop();
                 break;
             }
@@ -183,7 +182,7 @@ class Robot {
         motors.forward(SPEED);
         boolean success;
         while (true) {
-            if ((irSensor.getDistance() < STOP_THRESHOLD && irSensor.getDistance() > 0)) {
+            if (irSensor.isWallAhead()) {
                 motors.stop();
                 success = false;
                 break;
