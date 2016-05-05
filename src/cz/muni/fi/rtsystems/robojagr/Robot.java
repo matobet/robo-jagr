@@ -17,12 +17,6 @@ class Robot {
     private Motors motors = new Motors();
     private GraphicsLCD lcd = LocalEV3.get().getGraphicsLCD();
     private int orientation = 0; // smer natoceni ve stupnich, vychozi 0, pri
-    // otoceni jinem nez o 360 potreba
-    // aktualizovat
-//    private int beaconDirection;
-//    private int beaconDistance;
-//    private int goalDirection;
-//    private int goalDistance;
 
     public void testForCalibrateDistanceRatio() {
         irSensor.switchBeaconDetector();
@@ -58,21 +52,12 @@ class Robot {
             if (irSensor.getDirection() > -5 && irSensor.getDirection() < 5 && irSensor.getDirection() != 0) {
                 motors.stop();
                 orientation = (orientation + motors.turnedDegree()) % 360;
-//                beaconDirection = orientation;
-//                beaconDistance = irSensor.getDistance();
                 break;
             }
         }
     }
 
     public void findGoal() {
-        // TO DO
-        // bude nejakym zpusobem jezdit a hledat branku + aktualizovat mapu
-        // prostredi, pokud mozno nenarazi do beaconu nebo do zdi
-        // az najde branku dojede k beaconu a zkusi ho tam dotlacit
-
-        // priklad jen jede rovne dokud se nepriblizi ke zdi nebo nenajde branku
-        // (nema pod sebou bilou barvu]
         irSensor.switchDistanceDetector();
 
         goRoundCorners();
@@ -133,8 +118,6 @@ class Robot {
         while (true) {
             if (irSensor.getDistance() <= STOP_THRESHOLD && irSensor.getDistance() != 0) {
                 motors.stop();
-//                updateBeaconLocation(motors.drivenDistance());
-//                updateGoalLocation(motors.drivenDistance());
                 break;
             }
         }
@@ -171,8 +154,6 @@ class Robot {
     private void forwardAndUpdate(int speed, int distance) {
         motors.forward(speed, distance);
         waitTillFinish();
-//        updateBeaconLocation(distance);
-//        updateGoalLocation(distance);
     }
 
     private void sensorsMessageBeacon() {
@@ -181,7 +162,6 @@ class Robot {
         lcd.drawString("Direction: " + irSensor.getDirection(), 5, 20, 0);
         lcd.drawString("Color sensor: " + colorSensor.getColor(), 5, 40, 0);
         lcd.drawString("Orientation: " + orientation, 5, 80, 0);
-//        lcd.drawString("B-o/d: " + beaconDirection + "/" + beaconDistance, 5, 100, 0);
     }
 
     private void sensorsMessageDistance() {
@@ -189,7 +169,6 @@ class Robot {
         lcd.drawString("IR distance: " + irSensor.getDistance(), 5, 0, 0);
         lcd.drawString("Color sensor: " + colorSensor.getColor(), 5, 40, 0);
         lcd.drawString("Orientation: " + orientation, 5, 80, 0);
-//        lcd.drawString("B-o/d: " + beaconDirection + "/" + beaconDistance, 5, 100, 0);
     }
 
     private void waitTillFinish() {
@@ -200,35 +179,6 @@ class Robot {
         }
     }
 
-//    private void updateBeaconLocation(int distance) {
-//        int gama = Math.abs(orientation - beaconDirection);
-//        int a = beaconDistance;
-//        int b = distance;
-//        int[] dirDis = remapCoordinates(gama, a, b);
-//        beaconDirection = dirDis[0];
-//        beaconDistance = dirDis[1];
-//    }
-//
-//    private void updateGoalLocation(int distance) {
-//        int gama = Math.abs(orientation - goalDirection);
-//        int a = goalDistance;
-//        int b = distance;
-//        int[] dirDis = remapCoordinates(gama, a, b);
-//        goalDirection = dirDis[0];
-//        goalDistance = dirDis[1];
-//    }
-
-//    private int[] remapCoordinates(int gama, int a, int b) {
-//        // kozinova veta :-)
-//        double c = Math.sqrt(a * a + b * b + 2 * a * b * Math.cos(gama * Math.PI / 180));
-//        // synova veta :-)
-//        double alfa = Math.asin(a / c * Math.sin(gama * Math.PI / 180));
-//        int[] dirDis = new int[2];
-//        dirDis[0] = ((int) Math.round(alfa * 180 / Math.PI) + orientation + 180) % 360;
-//        dirDis[1] = (int) Math.round(c);
-//        return dirDis;
-//    }
-
     private void goRoundCorners() {
         motors.forward(SPEED);
         boolean success;
@@ -236,13 +186,11 @@ class Robot {
             if ((irSensor.getDistance() < STOP_THRESHOLD && irSensor.getDistance() > 0)) {
                 motors.stop();
                 success = false;
-//                updateBeaconLocation(motors.drivenDistance());
                 break;
             }
             if (colorSensor.isWhite()) {
                 motors.stop();
                 success = true;
-//                updateBeaconLocation(motors.drivenDistance());
                 break;
             }
         }
@@ -251,8 +199,6 @@ class Robot {
             waitForButton();
             goRoundCorners();
         }
-//        goalDistance = 0;
-//        goalDirection = orientation;
         irSensor.switchBeaconDetector(); // chvili trva prepnuti
         waitForButton();
     }
