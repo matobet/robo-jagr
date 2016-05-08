@@ -6,7 +6,6 @@ public class JagrApplication {
         Robot robot = new Robot();
         robot.introMessage();
         robot.startSensors();
-        // robot.testForCalibrateDistanceRatio();
         robot.startTimer();
         robot.findGoal();
         robot.goToMiddleOfGoal();

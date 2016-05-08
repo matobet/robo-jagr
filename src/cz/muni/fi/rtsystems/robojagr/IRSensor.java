@@ -5,11 +5,13 @@ import lejos.hardware.sensor.EV3IRSensor;
 import lejos.hardware.sensor.SensorMode;
 
 class IRSensor extends Thread {
-    public static final int STOP_THRESHOLD = 10;
+    public static final int STOP_WALL_THRESHOLD = 10;
+    public static final int STOP_BEACON_THRESHOLD = 11;
+    public static final int STOP_CLOSE_WALL_THRESHOLD = 1;
 
     private EV3IRSensor ir = new EV3IRSensor(SensorPort.S4);
-    private SensorMode sp = ir.getSeekMode();
-    private boolean inDistanceMode = false;
+    private SensorMode sp = ir.getDistanceMode();
+    private boolean inDistanceMode = true;
     private int value1;
     private int value2;
 
@@ -27,9 +29,9 @@ class IRSensor extends Thread {
     }
 
     /**
-     * hodnota ze senzoru - vzdalenost u distance /beacon modu
+     * distance value from sensor - for both distance and beacon mode
      *
-     * @return
+     * @return distance in sensor units
      */
     public int getDistance() {
         if (inDistanceMode) {
@@ -39,14 +41,28 @@ class IRSensor extends Thread {
         }
     }
 
-    public boolean isWallAhead() {
-        return getDistance() < STOP_THRESHOLD && getDistance() != 0;
-    }
-
     /**
-     * dalsi hodnota ze senzoru, u beaconmodu vzdalenost
+     * if there is wall or beacon (in beacon mode) closer than threshold
+     * @return true if object is close
+     */
+    public boolean isObjectAhead() {
+        int threshold;
+    	if (inDistanceMode) {
+        	threshold = STOP_WALL_THRESHOLD;
+        } else {
+        	threshold = STOP_BEACON_THRESHOLD;
+        }
+    	return getDistance() < threshold && getDistance() != 0;
+    }
+    
+    public boolean isCloseToWall() {
+    	return getDistance() < STOP_CLOSE_WALL_THRESHOLD;
+    }
+    
+    /**
+     * direction value from beacon mode
      *
-     * @return
+     * @return direction value
      */
     public int getDirection() {
         if (!inDistanceMode) {
@@ -57,19 +73,23 @@ class IRSensor extends Thread {
     }
 
     /**
-     * prepnuti do modu beacondetector
+     * switch to beacon mode
      */
     public void switchBeaconDetector() {
-        sp = ir.getSeekMode();
-        inDistanceMode = false;
+        if (inDistanceMode) {
+        	sp = ir.getSeekMode();
+            inDistanceMode = false;
+        }	
     }
 
     /**
-     * prepnuti do modu distancedetector
+     * switch detector to distance mode
      */
     public void switchDistanceDetector() {
-        sp = ir.getDistanceMode();
-        inDistanceMode = true;
+    	if (!inDistanceMode) {
+    		sp = ir.getDistanceMode();
+    		inDistanceMode = true;
+    	}
     }
 
     public boolean isInDistanceMode() {

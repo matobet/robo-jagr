@@ -8,77 +8,33 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.GraphicsLCD;
 
 class Robot {
+	
+	public static final int DISPLAY_REFRESH_TIME = 400;
+	public static final int HALF_GOAL_DISTANCE = 8;
+	public static final int[] GO_ROUND_BEACON_PARAMS = {7,22,7};
 
     private IRSensor irSensor;
     private ColorSensor colorSensor;
     private Motors motors = new Motors();
     private GraphicsLCD lcd = LocalEV3.get().getGraphicsLCD();
-    private int orientation = 0; // smer natoceni ve stupnich, vychozi 0, pri
+    // direction of the robot, 0 default; not really used in this version
+    private int orientation = 0;
 
-    public void testForCalibrateDistanceRatio() {
-        irSensor.switchBeaconDetector();
-        int bd = irSensor.getDistance();
-        motors.forward(100);
-        while (true) {
-            if (irSensor.getDistance() <= bd - 20) {
-                motors.stop();
-                break;
-            }
-        }
-        lcd.clear();
-        lcd.drawString("bd-20/d: " + (bd - 20) + "/" + motors.drivenDistance(), 5, 0, 0);
-
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (Button.ESCAPE.isDown())
-                    System.exit(0);
-            }
-        }, 400, 400);
-    }
-
+    
     /**
-     * otoci se a zjisti pozici a vzdalenost k beaconu
-     */
-    public void findBeacon() {
-        irSensor.switchBeaconDetector();
-        motors.turn();
-
-        while (true) {
-            if (irSensor.getDirection() > -5 && irSensor.getDirection() < 5 && irSensor.getDirection() != 0) {
-                motors.stop();
-                orientation = (orientation + motors.turnedDegree()) % 360;
-                break;
-            }
-        }
-    }
-
-    public void findGoal() {
-        irSensor.switchDistanceDetector();
-
-        goRoundCorners();
-    }
-
-    /**
-     * posun sa do stredu branky aby sme mohli odtial vyrazit k beaconu
-     */
-    public void goToMiddleOfGoal() {
-        // TODO: najst spravnu magic constantu pre `distance` od kraju branku do stredu
-        forwardAndUpdate(Motors.DEFAULT_SPEED, 8);
-    }
-
-    /**
-     * uvodni info na displeji
+     * start display info
      */
     public void introMessage() {
-        lcd.drawString("Hockey Car", 5, 0, 0);
+        lcd.drawString("ROBO-JAGR", 5, 0, 0);
         lcd.drawString("press any key to", 5, 20, 0);
         lcd.drawString("start, esc to exit", 5, 40, 0);
         waitForButton();
         lcd.clear();
     }
 
+    /**
+     * initialize sensors
+     */
     public void startSensors() {
         lcd.drawString("...starting sensors", 5, 0, 0);
         irSensor = new IRSensor();
@@ -91,7 +47,7 @@ class Robot {
     }
 
     /**
-     * prubezne zobrazeni udaju ze senzoru, vypnuti pri esc
+     * refreshes info on display
      */
     public void startTimer() {
         Timer timer = new Timer();
@@ -106,40 +62,116 @@ class Robot {
                 if (Button.ESCAPE.isDown())
                     System.exit(0);
             }
-        }, 400, 400);
+        }, DISPLAY_REFRESH_TIME, DISPLAY_REFRESH_TIME);
     }
 
+    /**
+     * go round corners until reaches goal
+     */
+    public void findGoal() {
+    	irSensor.switchDistanceDetector();
+    	motors.forward();
+        boolean success;
+        while (true) {
+            if (irSensor.isObjectAhead()) {
+            	motors.stop();
+            	success = false;
+                break;
+            }
+            if (colorSensor.isWhite()) {
+                motors.stop();
+                success = true;
+                break;
+            }
+        }
+        if (!success) {
+        	closerCarefully();
+            turnAndOrientation(90);          
+            findGoal();
+        }
+        irSensor.switchBeaconDetector();
+    }
+
+    private void closerCarefully() {
+    	motors.forward(motors.DEFAULT_SPEED/2);
+    	while (true) {
+            if (irSensor.isCloseToWall()) {
+            	motors.stop();
+                break;
+            }
+    	}
+    }
+    
+    /**
+     * move robot near the center of the goal
+     */
+    public void goToMiddleOfGoal() {
+        forwardAndUpdate(Motors.DEFAULT_SPEED, HALF_GOAL_DISTANCE);
+    }
+
+    /**
+     * finds beacon a goes to it
+     */
     public void goToBeacon() {
+    	irSensor.switchBeaconDetector();
         findBeacon();
         motors.forward();
         while (true) {
-            if (irSensor.isWallAhead()) {
+            if (irSensor.isObjectAhead()) {
                 motors.stop();
                 break;
             }
         }
     }
+    
+    /**
+     * turns towards beacon
+     */
+    private void findBeacon() {
+        motors.turn();
+        stopTowardsBeacon(-15,0);
 
+        motors.turnSlower();
+        stopTowardsBeacon(-2,1);
+    }
+    
+    private void stopTowardsBeacon(int lowerThreshold, int upperThreshold) {
+    	while (true) {
+            if (irSensor.getDirection() > lowerThreshold && irSensor.getDirection() < upperThreshold) {
+            	motors.stop();
+            	orientation = (orientation + motors.turnedDegree()) % 360;
+                break;
+            }
+        }
+    }
+    
+    /**
+     * gets behind beacon
+     */
     public void goRoundBeacon() {
+    	irSensor.switchDistanceDetector();
         turnAndOrientation(-90);
-        forwardAndUpdate(Motors.DEFAULT_SPEED, 8);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, GO_ROUND_BEACON_PARAMS[0]);
         turnAndOrientation(90);
-        forwardAndUpdate(Motors.DEFAULT_SPEED, 22);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, GO_ROUND_BEACON_PARAMS[1]);
         turnAndOrientation(90);
-        forwardAndUpdate(Motors.DEFAULT_SPEED, 8);
+        forwardAndUpdate(Motors.DEFAULT_SPEED, GO_ROUND_BEACON_PARAMS[2]);
         turnAndOrientation(90);
-
     }
 
+    /**
+     * go with beacon towards goal
+     */
     public void goToGoal() {
-        motors.forward();
-        irSensor.switchDistanceDetector();
+    	irSensor.switchDistanceDetector();
+    	motors.forward();
         while (true) {
-            if (irSensor.isWallAhead()) {
+            if (irSensor.isObjectAhead() || colorSensor.isWhite()) {
                 motors.stop();
                 break;
             }
         }
+        System.exit(0);
     }
 
     private void turnAndOrientation(int degree) {
@@ -176,29 +208,6 @@ class Robot {
         }
     }
 
-    private void goRoundCorners() {
-        motors.forward();
-        boolean success;
-        while (true) {
-            if (irSensor.isWallAhead()) {
-                motors.stop();
-                success = false;
-                break;
-            }
-            if (colorSensor.isWhite()) {
-                motors.stop();
-                success = true;
-                break;
-            }
-        }
-        if (!success) {
-            turnAndOrientation(90);
-            waitForButton();
-            goRoundCorners();
-        }
-        irSensor.switchBeaconDetector(); // chvili trva prepnuti
-        waitForButton();
-    }
 
     private void waitForButton() {
         Button.waitForAnyPress();

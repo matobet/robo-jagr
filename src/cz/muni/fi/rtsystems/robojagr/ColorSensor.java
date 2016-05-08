@@ -7,7 +7,7 @@ import lejos.hardware.sensor.SensorMode;
 
 class ColorSensor extends Thread {
 
-    public static int WHITE = -1;
+    public static final int WHITE = -1;
 
     private EV3ColorSensor cs = new EV3ColorSensor(SensorPort.S1);
     private SensorMode sp = cs.getColorIDMode();
@@ -22,7 +22,7 @@ class ColorSensor extends Thread {
     }
 
     /**
-     * zjisteni hodnoty barvy pod predkem vozitka, bila = -1
+     * return color index, white = -1
      */
     public int getColor() {
         return color;
