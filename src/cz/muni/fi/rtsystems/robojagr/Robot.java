@@ -22,7 +22,8 @@ class Robot {
 
     
     /**
-     * start display info
+     * Display an intro message on the LCD
+     * 
      */
     public void introMessage() {
         lcd.drawString("ROBO-JAGR", 5, 0, 0);
@@ -33,7 +34,8 @@ class Robot {
     }
 
     /**
-     * initialize sensors
+     * Initialize sensors
+     * 
      */
     public void startSensors() {
         lcd.drawString("...starting sensors", 5, 0, 0);
@@ -47,7 +49,8 @@ class Robot {
     }
 
     /**
-     * refreshes info on display
+     * Refresh info on LCD
+     * 
      */
     public void startTimer() {
         Timer timer = new Timer();
@@ -66,7 +69,8 @@ class Robot {
     }
 
     /**
-     * go round corners until reaches goal
+     * Move along the edge of the arena until the goal is found.
+     * 
      */
     public void findGoal() {
     	irSensor.switchDistanceDetector();
@@ -103,14 +107,14 @@ class Robot {
     }
     
     /**
-     * move robot near the center of the goal
+     * Move robot to the center of the goal.
      */
     public void goToMiddleOfGoal() {
         forwardAndUpdate(Motors.DEFAULT_SPEED, HALF_GOAL_DISTANCE);
     }
 
     /**
-     * finds beacon a goes to it
+     * Find IR beacon and move to it.
      */
     public void goToBeacon() {
     	irSensor.switchBeaconDetector();
@@ -125,7 +129,8 @@ class Robot {
     }
     
     /**
-     * turns towards beacon
+     * Turn the robot towards the IR beacon.
+     * 
      */
     private void findBeacon() {
         motors.turn();
@@ -146,7 +151,8 @@ class Robot {
     }
     
     /**
-     * gets behind beacon
+     * Move behind the beacon.
+     * 
      */
     public void goRoundBeacon() {
     	irSensor.switchDistanceDetector();
@@ -160,7 +166,7 @@ class Robot {
     }
 
     /**
-     * go with beacon towards goal
+     * Push the beacon towards the goal.
      */
     public void goToGoal() {
     	irSensor.switchDistanceDetector();

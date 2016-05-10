@@ -5,6 +5,10 @@ import lejos.hardware.port.SensorPort;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorMode;
 
+/**
+ * Color sensor manager.
+ *
+ */
 class ColorSensor extends Thread {
 
     public static final int WHITE = -1;
@@ -22,12 +26,17 @@ class ColorSensor extends Thread {
     }
 
     /**
-     * return color index, white = -1
+     * Return color index, white = -1
      */
     public int getColor() {
         return color;
     }
 
+    /**
+     * Find out whether the detected color is white.
+     * 
+     * @return true if detected color is white
+     */
     public boolean isWhite() {
         return color == WHITE;
     }

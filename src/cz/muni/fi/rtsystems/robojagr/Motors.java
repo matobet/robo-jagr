@@ -15,7 +15,7 @@ class Motors {
     private EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.B);
 
     /**
-     * drives forward until stop() called
+     * Drives forward until stop() is called
      *
      * @param speed speed
      */
@@ -28,22 +28,23 @@ class Motors {
     }
 
     /**
-     * drives forward until stop() called
+     * Drives forward until stop() is called
      */
     public void forward() {
         forward(DEFAULT_SPEED);
     }
 
     /**
-     * measures driven distance
-     * @return distance
+     * Measure the driven distance.
+     * 
+     * @return distance driven
      */
     public int drivenDistance() {
         return (int) Math.round(rightMotor.getTachoCount() / DISTANCE_RATIO);
     }
 
     /**
-     * stops motors
+     * Stop motors.
      */
     public void stop() {
         rightMotor.stop(true);
@@ -51,7 +52,8 @@ class Motors {
     }
 
     /**
-     * drives forward given distance
+     * Drives forward a specified distance.
+     * 
      * @param speed speed
      * @param distance distance
      */
@@ -63,9 +65,9 @@ class Motors {
     }
 
     /**
-     * turns given degree (positive = anticlockwise)
+     * Turns by specified degree (positive = anti-clockwise).
      *
-     * @param degree angle
+     * @param degree angle to turn by
      */
     public void turn(int degree) {
         rightMotor.setSpeed(DEFAULT_TURN_SPEED);
@@ -75,7 +77,8 @@ class Motors {
     }
 
     /**
-     * turn anticlockwise until stop() called
+     * Turn anti-clockwise until stop() is called.
+     * 
      */
     public void turn() {
         rightMotor.resetTachoCount();
@@ -85,7 +88,11 @@ class Motors {
         leftMotor.backward();
 
     }
-    
+
+    /**
+     * Turn anti-clockwise slowly until stop() is called.
+     * 
+     */
     public void turnSlower() {
         rightMotor.resetTachoCount();
         rightMotor.setSpeed(DEFAULT_TURN_SPEED/3);
@@ -95,13 +102,19 @@ class Motors {
     }
 
     /**
-     * gets angle turning
-     * @return angle
+     * Gets the angle turned by the robot.
+     * 
+     * @return angle turned
      */
     public int turnedDegree() {
         return (int) Math.round(rightMotor.getTachoCount() / TURN_RATIO);
     }
 
+    /**
+     * Finds out whether the motors have finished rotating.
+     * 
+     * @return true if they finished rotating
+     */
     public boolean isFinished() {
         return !rightMotor.isMoving() && !leftMotor.isMoving();
     }
